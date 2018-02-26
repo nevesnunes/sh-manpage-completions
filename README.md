@@ -17,6 +17,6 @@ You can then take the files from `completions/$shell/` and use them according to
 
 ## License
 
-Files taken from fish-shell's source code are released under the GNU General Public License, version 2 (see LICENSE.GPL2).
+Files in `fish-tools` were taken from fish-shell's source code, which is released under the GNU General Public License, version 2 (see LICENSE.GPL2).
 
-The remaining source code is released under the MIT License (see LICENSE).
+The remaining source code is released under the MIT License (see LICENSE.MIT).
