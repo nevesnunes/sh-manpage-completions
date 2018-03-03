@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
+
 usage() {
   echo "Usage:   $0 man_file"
   echo "Example: $0 /usr/share/man/man1/man.1.gz"
@@ -56,11 +58,33 @@ process_completions() {
     completions=${completions::${#completions}-4}
   fi
 
-  tmp_file=$(mktemp)
-  cp templates/"$shell" "$shell_file"
+  template_file=templates/"$shell"
+  if [[ "$shell" == "bash" ]] && [[ "$BASH_NO_DESCRIPTIONS" -eq 1 ]]; then
+    template_file=templates/"$shell"_no_descriptions
+  fi
+
+  cp "$template_file" "$shell_file"
   sed -i "s/COMMAND/$name/g" "$shell_file"
-  awk -v r="$completions" "{gsub(/ARGUMENTS/,r)}1" "$shell_file" > "$tmp_file"
+  tmp_file=$(mktemp)
+  awk -v r="$completions" \
+      "{gsub(/ARGUMENTS/,r)}1" \
+      "$shell_file" > \
+      "$tmp_file"
   mv "$tmp_file" "$shell_file"
+  if [[ "$shell" == "bash" ]] && [[ "$BASH_NO_DESCRIPTIONS" -eq 0 ]]; then
+    descriptions=""
+    while IFS= read -r line; do
+      descriptions+="$begin_line$line$end_line"
+    done < "$shell"-converter-descriptions.out
+    if [ -n "$descriptions" ]; then
+      tmp_file=$(mktemp)
+      awk -v r="$descriptions" \
+          "{gsub(/DESCRIPTIONS/,r)}1" \
+          "$shell_file" > \
+          "$tmp_file"
+      mv "$tmp_file" "$shell_file"
+    fi
+  fi
 
   echo "Completion file available at $shell_file."
 }
