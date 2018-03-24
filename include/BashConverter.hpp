@@ -28,8 +28,9 @@ class BashConverter : public Converter {
     ~BashConverter() {
         file.close();
         for (auto &it : descriptions) {
-            descriptionsFile << std::setw(largest_joined_options_length)
-                             << it[0] << ": " << it[1] << std::endl;
+            // Right-align options
+            // descriptionsFile << std::setw(largest_joined_options_length);
+            descriptionsFile << it[0] << ": " << it[1] << std::endl;
         }
         descriptionsFile.close();
     };

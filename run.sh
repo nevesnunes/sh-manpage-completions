@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
+BASH_USE_SELECTOR="${BASH_USE_SELECTOR:-0}"
+SELECTOR="${SELECTOR-fzf}"
+SELECTOR_QUERY="${SELECTOR_QUERY-'-q'}"
 
 usage() {
   echo "Usage:   $0 man_file"
@@ -18,6 +21,24 @@ python_cmd=python3
 command -v "$python_cmd" > /dev/null 2>&1
 if [ $? -eq 1 ]; then
   python_cmd=python
+fi
+command -v "$python_cmd" > /dev/null 2>&1
+if [ $? -eq 1 ]; then
+  echo "'$python_cmd' not found in \$PATH."
+	exit 1
+fi
+python_version=$("$python_cmd" --version 2>&1 | grep -oiE '[0-9\.]*')
+if ! echo "$python_version" | grep -qE '^3'; then
+  echo "Python version must be at least 3 ('$python_cmd' is '$python_version')."
+	exit 1
+fi
+
+if [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
+	command -v "$SELECTOR" > /dev/null 2>&1
+	if [ $? -eq 1 ]; then
+		echo "'$SELECTOR' not found in \$PATH."
+		exit 1
+	fi
 fi
 
 mkdir -p completions/fish
@@ -59,8 +80,12 @@ process_completions() {
   fi
 
   template_file=templates/"$shell"
-  if [[ "$shell" == "bash" ]] && [[ "$BASH_NO_DESCRIPTIONS" -eq 1 ]]; then
-    template_file=templates/"$shell"_no_descriptions
+  if [[ "$shell" == "bash" ]]; then
+    if [[ "$BASH_NO_DESCRIPTIONS" -eq 1 ]]; then
+      template_file=templates/"$shell"_no_descriptions
+    elif [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
+      template_file=templates/"$shell"_use_selector
+    fi
   fi
 
   cp "$template_file" "$shell_file"
@@ -83,6 +108,13 @@ process_completions() {
           "$shell_file" > \
           "$tmp_file"
       mv "$tmp_file" "$shell_file"
+    fi
+    if [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
+      if [ -n "$SELECTOR_QUERY" ]; then
+        sed -i "s/SELECTOR/$SELECTOR $SELECTOR_QUERY \"\$cur\"/g" "$shell_file"
+      else
+        sed -i "s/SELECTOR/$SELECTOR/g" "$shell_file"
+      fi
     fi
   fi
 
