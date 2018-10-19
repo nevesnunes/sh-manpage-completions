@@ -62,6 +62,8 @@ complete {
     yy_pop_state();
 }
 
+<X_s_quoted,X_d_quoted>"\["    buffer += "\\\\[";
+<X_s_quoted,X_d_quoted>"\]"    buffer += "\\\\]";
 <X_s_quoted,X_d_quoted>"\`"    buffer += "\'\"\'\"\'";
 <X_s_quoted,X_d_quoted>{SPACE} buffer += " ";
 <X_s_quoted,X_d_quoted>.       buffer += yytext;
