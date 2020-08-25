@@ -43,6 +43,9 @@ BASH_USE_SELECTOR=1 SELECTOR=fzy SELECTOR_QUERY='-q' ./run.sh /usr/share/man/man
 
 ## Related Work
 
+- Built-in parsing of options output by `--help`:
+    - **Bash**: `complete -F _longopt`
+    - **Zsh**: `compdef _gnu_generic`
 - [zsh-completion-generator](https://github.com/RobSis/zsh-completion-generator)
 
 ## License
