@@ -46,7 +46,8 @@ BASH_USE_SELECTOR=1 SELECTOR=fzy SELECTOR_QUERY='-q' ./run.sh /usr/share/man/man
 - Built-in parsing of options output by `--help`:
     - **Bash**: `complete -F _longopt`
     - **Zsh**: `compdef _gnu_generic`
-- [zsh-completion-generator](https://github.com/RobSis/zsh-completion-generator)
+- [GitHub \- RobSis/zsh\-completion\-generator: Plugin that generates completion functions automatically from getopt\-style help texts](https://github.com/RobSis/zsh-completion-generator)
+- [GitHub \- Aloxaf/fzf\-tab: Replace zsh&#39;s default completion selection menu with fzf!](https://github.com/Aloxaf/fzf-tab)
 
 ## License
 
