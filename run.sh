@@ -78,7 +78,7 @@ process_completions() {
   while IFS= read -r line; do
     completions+="$begin_line$line$end_line"
   done < "$scanner_out_file"
-  if [[ "$shell" == "zsh" ]]; then
+  if [[ "$shell" == "zsh" ]] && [[ "${#completions}" -ge 4 ]]; then
     completions=${completions::${#completions}-4}
   fi
 
