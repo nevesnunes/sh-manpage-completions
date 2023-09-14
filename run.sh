@@ -41,6 +41,9 @@ if [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
 	fi
 fi
 
+# change working directory to the repository's root where this file should be
+cd "$(dirname "$0")" || exit 1
+
 mkdir -p completions/fish
 fish_file=completions/fish/"$name".fish
 if [ ! -f "$fish_file" ]; then
@@ -75,7 +78,7 @@ process_completions() {
   while IFS= read -r line; do
     completions+="$begin_line$line$end_line"
   done < "$scanner_out_file"
-  if [[ "$shell" == "zsh" ]]; then
+  if [[ "$shell" == "zsh" ]] && [[ "${#completions}" -ge 4 ]]; then
     completions=${completions::${#completions}-4}
   fi
 
