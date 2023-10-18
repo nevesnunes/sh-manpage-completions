@@ -15,6 +15,10 @@ You can then take the files from `completions/$shell/` and use them according to
 - **Bash**: Source them in an initialization file (e.g. `~/.bashrc`)
 - **Zsh**: Add them to a directory in `$fpath`
 
+## Requirements
+
+`./dependencies.sh` is run to check for any missing executables.
+
 ## Limitations
 
 Bash doesn't support descriptions in completions. There has been some [discussion about workarounds](https://stackoverflow.com/questions/7267185/bash-autocompletion-add-description-for-possible-completions). Two different strategies were implemented:
@@ -29,7 +33,7 @@ BASH_NO_DESCRIPTIONS=1 ./run.sh /usr/share/man/man1/tar.1.gz
 
 2. Filter through a selector
 
-You can use a fuzzy selector to extract the right option, containg both the completion and its description. No redundancy, but relies on an external application. Can be used like so:
+You can use a fuzzy selector to extract the right option, containing both the completion and its description. No redundancy, but relies on an external application. Can be used like so:
 
 ```
 BASH_USE_SELECTOR=1 ./run.sh /usr/share/man/man1/tar.1.gz

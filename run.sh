@@ -4,6 +4,18 @@ BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
 BASH_USE_SELECTOR="${BASH_USE_SELECTOR:-0}"
 SELECTOR="${SELECTOR-fzf}"
 SELECTOR_QUERY="${SELECTOR_QUERY-'-q'}"
+export BASH_NO_DESCRIPTIONS
+export BASH_USE_SELECTOR
+export SELECTOR
+export SELECTOR_QUERY
+
+PYTHON_CMD=python3
+if ! command -v "$PYTHON_CMD" > /dev/null 2>&1; then
+  PYTHON_CMD=python
+fi
+export PYTHON_CMD
+
+./dependencies.sh || exit 1
 
 usage() {
   echo "Usage:   $0 man_file"
@@ -17,30 +29,6 @@ file=$1
 name=$(echo "$file" | sed 's/.*\/\([^.]*\).*/\1/g')
 [ -n "$name" ] || usage
 
-python_cmd=python3
-command -v "$python_cmd" > /dev/null 2>&1
-if [ $? -eq 1 ]; then
-  python_cmd=python
-fi
-command -v "$python_cmd" > /dev/null 2>&1
-if [ $? -eq 1 ]; then
-  echo "'$python_cmd' not found in \$PATH."
-	exit 1
-fi
-python_version=$("$python_cmd" --version 2>&1 | grep -oiE '[0-9\.]*')
-if ! echo "$python_version" | grep -qE '^3'; then
-  echo "Python version must be at least 3 ('$python_cmd' is '$python_version')."
-	exit 1
-fi
-
-if [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
-	command -v "$SELECTOR" > /dev/null 2>&1
-	if [ $? -eq 1 ]; then
-		echo "'$SELECTOR' not found in \$PATH."
-		exit 1
-	fi
-fi
-
 # change working directory to the repository's root where this file should be
 cd "$(dirname "$0")" || exit 1
 
@@ -49,7 +37,7 @@ fish_file=completions/fish/"$name".fish
 if [ ! -f "$fish_file" ]; then
   echo "Generating fish completion..."
 
-  "$python_cmd" fish-tools/create_manpage_completions.py "$file" -s > "$fish_file"
+  "$PYTHON_CMD" fish-tools/create_manpage_completions.py "$file" -s > "$fish_file"
 fi
 
 echo "Building scanner..."
