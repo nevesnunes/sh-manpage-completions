@@ -19,7 +19,7 @@ if [ "$BASH_USE_SELECTOR" -eq 1 ]; then
   fi
 fi
 
-for i in awk bash flex g++ make sed; do
+for i in awk flex g++ make sed; do
   if ! command -v "$i" > /dev/null 2>&1; then
     echo "'$i' not found in \$PATH." >&2
     exit 1

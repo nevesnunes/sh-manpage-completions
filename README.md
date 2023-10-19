@@ -19,6 +19,22 @@ You can then take the files from `completions/$shell/` and use them according to
 
 `./dependencies.sh` is run to check for any missing executables.
 
+## Testing
+
+If you introduce any source changes, validate them with `./test.sh`, which generates completions for an example man page, and fails if any differences are found:
+
+```diff
+--- ./test/out/zsh/_foo 2023-10-19 07:57:51.901604671 +0100
++++ ./completions/zsh/_foo      2023-10-19 08:09:41.024276201 +0100
+@@ -6,4 +6,4 @@
+                {-y,--yellow}'[Option 2]' \
+                '--bar[Option 3]' \
+                '-b[Option 4]' \
+-               '--orange[Option 5]'
++               '--orange[Option 5]' \
+Test FAILED: 'zsh' completion mismatched expected output.
+```
+
 ## Limitations
 
 Bash doesn't support descriptions in completions. There has been some [discussion about workarounds](https://stackoverflow.com/questions/7267185/bash-autocompletion-add-description-for-possible-completions). Two different strategies were implemented:

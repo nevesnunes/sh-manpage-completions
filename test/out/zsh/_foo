@@ -1,0 +1,9 @@
+#compdef foo
+
+_arguments \
+         '*:file:_files' \
+		{-r,--red}'[Option 1]' \
+		{-y,--yellow}'[Option 2]' \
+		'--bar[Option 3]' \
+		'-b[Option 4, and a quote shouldn'"'"'t break this description!]' \
+		'--orange[Option 5]'

@@ -1,0 +1,44 @@
+_foo() {
+  IFS='' read -r -d '' descriptions <<'EOF'
+-r,--red: 'Option 1'
+-y,--yellow: 'Option 2'
+--bar: 'Option 3'
+-b: 'Option 4, and a quote shouldn'"'"'t break this description!'
+--orange: 'Option 5'
+
+EOF
+
+  COMPREPLY=()
+  local cur
+  cur=$(_get_cword)
+  IFS='' read -r -d '' completions <<'EOF'
+-r
+--red
+-y
+--yellow
+--bar
+-b
+--orange
+
+EOF
+
+  if [ -z "$cur" ]; then
+      if declare -f _filedir &>/dev/null; then
+          _filedir
+      else
+          COMPREPLY=( $(compgen -f -- "$cur") )
+      fi
+      return 0
+  fi
+
+  COMPREPLY=( $( compgen -W "$completions" -- "$cur" ) )
+  if [[ ${#COMPREPLY[*]} -gt 1 ]]; then
+      echo ""
+      while read -r line; do
+          [[ "$line" == "$cur"* ]] && echo "$line"
+      done <<< "$descriptions"
+  fi
+
+  return 0
+}
+complete -F _foo foo

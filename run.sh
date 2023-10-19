@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
+set -u
 
 BASH_NO_DESCRIPTIONS="${BASH_NO_DESCRIPTIONS:-0}"
 BASH_USE_SELECTOR="${BASH_USE_SELECTOR:-0}"
@@ -58,23 +60,23 @@ process_completions() {
 
   completions=""
   begin_line=""
-  end_line=$'\n'
-  if [[ "$shell" == "zsh" ]]; then
-    begin_line="\t\t"
-    end_line=" \\\\"$'\n'
+  end_line='\n'
+  if echo "$shell" | grep "zsh" > /dev/null; then
+    begin_line='\t\t'
+    end_line=' \\\n'
   fi
   while IFS= read -r line; do
-    completions+="$begin_line$line$end_line"
+    completions=$completions$begin_line$line$end_line
   done < "$scanner_out_file"
-  if [[ "$shell" == "zsh" ]] && [[ "${#completions}" -ge 4 ]]; then
-    completions=${completions::${#completions}-4}
+  if { echo "$shell" | grep "zsh" > /dev/null; } && [ "${#completions}" -ge 4 ]; then
+    completions=$(printf '%s\n' "$completions" | head -c -4)
   fi
 
   template_file=templates/"$shell"
-  if [[ "$shell" == "bash" ]]; then
-    if [[ "$BASH_NO_DESCRIPTIONS" -eq 1 ]]; then
+  if echo "$shell" | grep "bash" > /dev/null; then
+    if [ "$BASH_NO_DESCRIPTIONS" -eq 1 ]; then
       template_file=templates/"$shell"_no_descriptions
-    elif [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
+    elif [ "$BASH_USE_SELECTOR" -eq 1 ]; then
       template_file=templates/"$shell"_use_selector
     fi
   fi
@@ -83,24 +85,24 @@ process_completions() {
   sed -i "s/COMMAND/$name/g" "$shell_file"
   tmp_file=$(mktemp)
   awk -v r="$completions" \
-      "{gsub(/ARGUMENTS/,r)}1" \
-      "$shell_file" > \
-      "$tmp_file"
+    "{gsub(/ARGUMENTS/,r)}1" \
+    "$shell_file" > \
+    "$tmp_file"
   mv "$tmp_file" "$shell_file"
-  if [[ "$shell" == "bash" ]] && [[ "$BASH_NO_DESCRIPTIONS" -eq 0 ]]; then
+  if { echo "$shell" | grep "bash" > /dev/null; } && [ "$BASH_NO_DESCRIPTIONS" -eq 0 ]; then
     descriptions=""
     while IFS= read -r line; do
-      descriptions+="$begin_line$line$end_line"
+      descriptions=$descriptions$begin_line$line$end_line
     done < "$shell"-converter-descriptions.out
     if [ -n "$descriptions" ]; then
       tmp_file=$(mktemp)
       awk -v r="$descriptions" \
-          "{gsub(/DESCRIPTIONS/,r)}1" \
-          "$shell_file" > \
-          "$tmp_file"
+        "{gsub(/DESCRIPTIONS/,r)}1" \
+        "$shell_file" > \
+        "$tmp_file"
       mv "$tmp_file" "$shell_file"
     fi
-    if [[ "$BASH_USE_SELECTOR" -eq 1 ]]; then
+    if [ "$BASH_USE_SELECTOR" -eq 1 ]; then
       if [ -n "$SELECTOR_QUERY" ]; then
         sed -i "s/SELECTOR/$SELECTOR $SELECTOR_QUERY \"\$cur\"/g" "$shell_file"
       else
